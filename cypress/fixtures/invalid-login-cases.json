@@ -1,0 +1,10 @@
+[
+  {
+    "email": "unknown.user@example.invalid",
+    "password": "incorrect-password"
+  },
+  {
+    "email": "another.unknown@example.invalid",
+    "password": "incorrect-password"
+  }
+]
