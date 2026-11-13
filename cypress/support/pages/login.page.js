@@ -3,16 +3,16 @@ const BasePage = require('./base.page');
 class LoginPage extends BasePage {
   constructor() {
     super({
-      loginEmail: null,
-      loginPassword: null,
-      loginButton: null,
-      loginError: null,
-      signupName: null,
-      signupEmail: null,
-      signupButton: null,
-      logoutLink: null,
-      loggedInIndicator: null,
-      existingEmailError: null,
+      loginEmail: '[data-qa="login-email"]',
+      loginPassword: '[data-qa="login-password"]',
+      loginButton: '[data-qa="login-button"]',
+      loginError: '.login-form form p',
+      signupName: '[data-qa="signup-name"]',
+      signupEmail: '[data-qa="signup-email"]',
+      signupButton: '[data-qa="signup-button"]',
+      logoutLink: '.shop-menu a[href="/logout"]',
+      loggedInIndicator: '.shop-menu a:contains("Logged in as")',
+      existingEmailError: '.signup-form form p',
     });
   }
 

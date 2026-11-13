@@ -3,12 +3,12 @@ const BasePage = require('./base.page');
 class HomePage extends BasePage {
   constructor() {
     super({
-      signupLoginLink: null,
-      productsLink: null,
-      cartLink: null,
-      subscriptionEmail: null,
-      subscriptionButton: null,
-      subscriptionSuccess: null,
+      signupLoginLink: '.shop-menu a[href="/login"]',
+      productsLink: '.shop-menu a[href="/products"]',
+      cartLink: '.shop-menu a[href="/view_cart"]',
+      subscriptionEmail: '#susbscribe_email',
+      subscriptionButton: '#subscribe',
+      subscriptionSuccess: '#success-subscribe .alert-success',
     });
   }
 

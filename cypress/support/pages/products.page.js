@@ -3,13 +3,15 @@ const BasePage = require('./base.page');
 class ProductsPage extends BasePage {
   constructor() {
     super({
-      productList: null,
-      firstProductDetailLink: null,
-      productDetails: null,
-      searchInput: null,
-      searchButton: null,
-      searchResults: null,
-      firstAddToCartButton: null,
+      productList: '.features_items',
+      firstProductDetailLink: '.features_items .choose a[href^="/product_details/"]:first',
+      productDetails: '.product-information',
+      searchInput: '#search_product',
+      searchButton: '#submit_search',
+      searchResults: '.features_items',
+      firstAddToCartButton: '.features_items .productinfo a.add-to-cart:first',
+      addedToCartModal: '#cartModal .modal-content',
+      continueShoppingButton: '#cartModal .close-modal',
     });
   }
 
@@ -35,7 +37,10 @@ class ProductsPage extends BasePage {
   }
 
   addFirstProductToCart() {
-    return this.click('firstAddToCartButton');
+    this.click('firstAddToCartButton');
+    // Waiting for the modal guarantees the add-to-cart request finished
+    this.assertVisible('addedToCartModal');
+    return this.click('continueShoppingButton');
   }
 }
 

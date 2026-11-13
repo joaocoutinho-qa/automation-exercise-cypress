@@ -3,8 +3,9 @@ const BasePage = require('./base.page');
 class CartPage extends BasePage {
   constructor() {
     super({
-      cartItems: null,
-      checkoutButton: null,
+      cartItems: '#cart_info_table tbody tr',
+      checkoutButton: '.check_out',
+      registerLoginLink: '#checkoutModal a[href="/login"]',
     });
   }
 
@@ -14,6 +15,10 @@ class CartPage extends BasePage {
 
   proceedToCheckout() {
     return this.click('checkoutButton');
+  }
+
+  continueToRegisterLogin() {
+    return this.click('registerLoginLink');
   }
 }
 

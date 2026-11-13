@@ -3,16 +3,16 @@ const BasePage = require('./base.page');
 class CheckoutPage extends BasePage {
   constructor() {
     super({
-      deliveryAddress: null,
-      orderComment: null,
-      placeOrderButton: null,
-      cardName: null,
-      cardNumber: null,
-      cardCvc: null,
-      cardExpiryMonth: null,
-      cardExpiryYear: null,
-      payButton: null,
-      confirmationMessage: null,
+      deliveryAddress: '#address_delivery',
+      orderComment: 'textarea[name="message"]',
+      placeOrderButton: 'a[href="/payment"]',
+      cardName: '[data-qa="name-on-card"]',
+      cardNumber: '[data-qa="card-number"]',
+      cardCvc: '[data-qa="cvc"]',
+      cardExpiryMonth: '[data-qa="expiry-month"]',
+      cardExpiryYear: '[data-qa="expiry-year"]',
+      payButton: '[data-qa="pay-button"]',
+      confirmationMessage: '[data-qa="order-placed"]',
     });
   }
 
