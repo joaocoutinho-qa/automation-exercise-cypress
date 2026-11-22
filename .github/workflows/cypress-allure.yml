@@ -42,6 +42,11 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
+      # The leftover .git would be copied (root-owned) into allure-history and break the Pages deploy
+      - name: Drop .git from history folder
+        if: always()
+        run: rm -rf gh-pages/.git
+
       - name: Generate Allure report with history
         uses: simple-elf/allure-report-action@master
         if: always()
