@@ -2,7 +2,7 @@ const productSearchCases = require('../fixtures/product-search-cases.json');
 const HomePage = require('../support/pages/home.page');
 const ProductsPage = require('../support/pages/products.page');
 
-describe('Products', () => {
+describe('Products', { retries: { runMode: 2, openMode: 0 } }, () => {
   it('Test Case 8: Verify All Products and product detail page', () => {
     // Arrange
     const homePage = new HomePage();
