@@ -12,31 +12,75 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  e2e:
+  # ── Bloco 1: configuração ──────────────────────────────────────────────
+  setup:
+    name: Setup (install & cache)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Cypress tests
-        id: cypress
+      # Installs npm deps + Cypress binary and caches both for the spec jobs
+      - name: Install dependencies
         uses: cypress-io/github-action@v6
-        continue-on-error: true
+        with:
+          runTests: false
+
+  # ── Blocos 2-5: um job por spec ────────────────────────────────────────
+  e2e:
+    name: "Spec: ${{ matrix.spec }}"
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        spec: [authentication, checkout, products, subscription]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Cypress spec
+        uses: cypress-io/github-action@v6
         with:
           browser: electron
+          spec: cypress/e2e/${{ matrix.spec }}.cy.js
 
       - name: Upload screenshots on failure
-        if: steps.cypress.outcome == 'failure'
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-screenshots
+          name: cypress-screenshots-${{ matrix.spec }}
           path: cypress/screenshots
           if-no-files-found: ignore
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.spec }}
+          path: allure-results
+          if-no-files-found: warn
+
+  # ── Bloco 6: finalização (logs + relatório) ────────────────────────────
+  report:
+    name: Allure report & publish
+    needs: e2e
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Merge Allure results from all specs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
 
       # The gh-pages branch stores previous reports so Allure can build trend history
       - name: Fetch report history (gh-pages)
         uses: actions/checkout@v4
-        if: always()
         continue-on-error: true
         with:
           ref: gh-pages
@@ -44,12 +88,10 @@ jobs:
 
       # The leftover .git would be copied (root-owned) into allure-history and break the Pages deploy
       - name: Drop .git from history folder
-        if: always()
         run: rm -rf gh-pages/.git
 
       - name: Generate Allure report with history
         uses: simple-elf/allure-report-action@master
-        if: always()
         with:
           allure_results: allure-results
           gh_pages: gh-pages
@@ -59,12 +101,19 @@ jobs:
 
       - name: Publish report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
 
-      - name: Fail job if tests failed
-        if: steps.cypress.outcome == 'failure'
+      - name: Run summary
+        run: |
+          echo "## Allure Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Specs: ${{ needs.e2e.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Report: https://joaocoutinho-qa.github.io/automation-exercise-cypress/${{ github.run_number }}/" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail pipeline if any spec failed
+        if: needs.e2e.result != 'success'
         run: exit 1
