@@ -10,6 +10,10 @@ module.exports = defineConfig({
     baseUrl,
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/e2e.js',
+    retries: {
+      runMode: 2,
+      openMode: 0,
+    },
     setupNodeEvents(on, config) {
       allureCypress(on, config, {
         resultsDir: 'allure-results',
